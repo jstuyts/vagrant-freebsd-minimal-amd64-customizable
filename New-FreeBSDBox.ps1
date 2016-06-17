@@ -192,7 +192,7 @@ function coalesce
   {
   param
     (
-    [parameter( Mandatory = $false )][string[]]$Values
+    [parameter( Mandatory = $false )][object[]]$Values
     )
 
   $result = $null
@@ -248,7 +248,7 @@ if ( $Headless )
 Stop-VirtualMachineIfRunning $Definition.Name
 Unregister-VirtualMachineIfExists $Definition.Name
 
-#Remove-ItemIfExists $BuildFolderPath
+Remove-ItemIfExists $BuildFolderPath
 Remove-ItemIfExists $CustomIsoPath
 Remove-ItemIfExists ( Join-Path ( Get-Location ) "$( $Definition.Name ).box" )
 
@@ -272,7 +272,7 @@ if ( -not ( Test-Path $CustomIsoPath ) )
   {
   # -aou: Automatically rename all filename collisions because the ISO
   # contains filenames that only differ by case.
-  #& 7z x -ssc -aou $LocalInstallationIsoPath "-o$BuildIsoCustomFolderPath"
+  & 7z x -aou $LocalInstallationIsoPath "-o$BuildIsoCustomFolderPath" | Out-Null
 
   $CustomRockRidgeMovedFolderPath = Join-Path $BuildIsoCustomFolderPath '.rr_moved'
   Remove-Item -Force -Recurse $CustomRockRidgeMovedFolderPath
@@ -305,7 +305,8 @@ if ( -not ( Test-Path $CustomIsoPath ) )
 
   Pop-Location
 
-  .\installerconfig-template.ps1 $Definition |
+  $InstallerconfigTemplateScript = coalesce $InstallerconfigTemplateScript, '.\installerconfig-template.ps1'
+  & $InstallerconfigTemplateScript $Definition |
         Out-File ( Join-Path $BuildFolderPath installerconfig ) -Encoding ascii
 
   Copy-ToUnixItem ( Join-Path $BuildFolderPath installerconfig ) ( Join-Path ( Join-Path $BuildIsoCustomFolderPath etc ) installerconfig )
@@ -322,17 +323,15 @@ if ( -not ( Test-Path $CustomIsoPath ) )
         -path-list ISO-paths.txt
   }
 
-throw 'Needs porting from here'
-
 if ( -not ( Test-VirtualMachine $Definition.Name ) )
   {
   & VBoxManage createvm `
         --name $Definition.Name `
-        --ostype Debian_64 `
+        --ostype FreeBSD_64 `
         --register `
         --basefolder $BuildVboxFolderPath
 
-  $MemorySizeInMebibytes = coalesce $Definition.MemorySizeInMebibytes, 360
+  $MemorySizeInMebibytes = coalesce $Definition.MemorySizeInMebibytes, 256
   & VBoxManage modifyvm $Definition.Name `
         --memory $MemorySizeInMebibytes `
         --boot1 dvd `

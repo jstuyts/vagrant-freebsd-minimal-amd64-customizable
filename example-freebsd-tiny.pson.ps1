@@ -1,52 +1,45 @@
 ﻿@{
     Name = 'example-freebsd-tiny-amd64';
-    # Optional. Default: 360
-    MemorySizeInMebibytes = 2048;
+    # Optional. Default: 256
+    MemorySizeInMebibytes = 256;
 
-    # Optional. Default: $false
+    # Optional. Default: zfs. Valid values: zfs, ufs
     #
-    # It is best to use the "vagrant-vbguest" plug-in as this will install a
-    # version of the guest additions that matches the version of VirtualBox:
-    #     https://github.com/dotless-de/vagrant-vbguest
-    #
-    # If you do install the guest additions from the FreeBSD repositories,
-    # then it is best to prevent the "vagrant-vbguest" plug-in from trying to
-    # upgrade the guest additions. Add the following to your "Vagrantfile":
-    #     config.vbguest.no_install = true
-    InstallGuestAdditions = $false;
+    # Note: In FreeBSD 10.3 root on ZFS is still experimental.
+    RootFileSystemCode = 'zfs'
+
+    # Optional, only applicable if "RootFileSystemCode" is "zfs". Default: 2
+    ZfsSwapSizeInGibibytes = 2
 
     Disks = @(
         @{
             # Optional. Default: 16384
-            SizeInMebibytes = 16384;
-            # Optional. Default: <none>
-            BiosBootPartitionName = 'grub';
+            # SizeInMebibytes = 16384;
+
+            # Optional, only applicable if "RootFileSystemCode" is "ufs".
             Partitions = @(
                 @{
-                    SizeInMebibytes = 4096;
-                    Type = 'filesystem';
-                    # Optional. Default: 'ext4'
-                    FilesystemCode = 'ext4';
-                    # Optional. Default: <none>
-                    MountPoint = '/';
-                    # Optional. Default: $false
-                    IsBootable = $true;
-                    # Optional. Default: <none>
-                    PartitionName = 'host';
-                    # Optional. Default: <none>
-                    Label = 'host';
+                    # The size of the partition can be specified in kibibytes
+                    # ("SizeInKibibytes") or mebibytes ("SizeInMebibytes").
+                    #
+                    # The boot partition cannot be too large. 512 kiB works
+                    # fine.
+                    SizeInKibibytes = 512;
+                    # Optional. Default: 'freebsd-ufs'
+                    Type = 'freebsd-boot';
                 },
                 @{
                     SizeInMebibytes = 2048;
-                    Type = 'swap';
-                    # Optional. Default: <none>
-                    PartitionName = 'swap';
+                    Type = 'freebsd-swap';
                 },
                 @{
-                    SizeInMebibytes = 10237;
-                    Type = 'empty';
-                    # Optional. Default: <none>
-                    PartitionName = 'firstpool';
+                    # Specifying a size that would put the end of the last
+                    # partition past the end of the disk, will make the
+                    # partition end at the end of the disk.
+                    SizeInMebibytes = 16384;
+                    Type = 'freebsd-ufs';
+                    # Required when "Type" is "freebsd-ufs".
+                    MountPoint = '/';
                 }
             );
         },
@@ -59,31 +52,12 @@
     IsoUrl = 'ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/10.3/FreeBSD-10.3-RELEASE-amd64-disc1.iso';
     IsoSha512 = '8137966d9b62eb4bf597b047a8a43ae9f9a06f23ab7c812f229d32cbfab5bb0cc27089dcfb5d233e50a18620b75606e31ff01bb3084517746664b3b3c46c9d04';
 
-    # Optional. Default: US
-    CountryCode = 'US';
-    # Optional. Default: en
-    LanguageCode = 'en';
-    # Optional. Default: UTF-8
-    CharacterEncodingCode = 'UTF-8';
-
-    # Optional. Default: us
-    KeymapCode = 'us';
-
-    # Optional. Default: GMT+0
-    TimeZoneCode = 'GMT+0';
-
-    # Optional. Default: true
-    MustClockBeSynchronizedUsingNtp = 'true';
-
-    # Optional. Default: true
-    MustNonFreePackagesBeAvailable = 'true';
+    # Optional. Default: UTC
+    TimeZoneCode = 'Europe/Brussels';
 
     # Optional. Default: <empty string>
-    NamesOfAdditionalPackagesToInstall = 'less vim';
+    NamesOfAdditionalPackagesToInstall = 'less nano';
 
-    # Optional. Default: false
-    MustJoinPopularityContest = 'false';
-
-    # Optional. Default: 'late_command.sh'
-    PostInstallationScript = 'late_command.sh';
+    # Optional. Default: '.\installerconfig-template.ps1'
+    InstallerconfigTemplateScript = '.\installerconfig-template.ps1';
 }
