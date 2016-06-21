@@ -50,6 +50,9 @@ DISTRIBUTIONS=""kernel.txz base.txz""
 echo 'hostname=""freebsd""' >> /etc/rc.conf
 echo 'ifconfig_em0=""DHCP""' >> /etc/rc.conf
 echo 'sshd_enable=""YES""' >> /etc/rc.conf
+# NFS is started because VirtualBox shared folders are not working with the
+# VirtualBox Guest Additions provided by FreeBSD.
+echo 'nfs_client_enable=""YES""' >> /etc/rc.conf
 
 ln -s /usr/share/zoneinfo/$ActualTimeZoneCode /etc/localtime
 
