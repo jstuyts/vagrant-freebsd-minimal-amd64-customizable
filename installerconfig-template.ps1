@@ -5,9 +5,6 @@ param
 
 $PrimaryDisk = $Data.Disks[0]
 
-#export ZFSBOOT_PARTITION_SCHEME=""GPT""
-#export ZFSBOOT_VDEV_TYPE=""stripe""
-
 $ActualRootFileSystemCode = coalesce $Data.RootFileSystemCode, 'zfs'
 if ( $ActualRootFileSystemCode -eq 'zfs' ) {
   $ActualZfsSwapSizeInGibibytes = coalesce $Data.ZfsSwapSizeInGibibytes, '2'
@@ -41,8 +38,6 @@ export ZFSBOOT_SWAP_SIZE=""$( $Data.ZfsSwapSizeInGibibytes )G"""
 
 $ActualTimeZoneCode = coalesce $Data.TimeZoneCode, 'UTC'
 $ActualNamesOfAdditionalPackagesToInstall = coalesce $Data.NamesOfAdditionalPackagesToInstall, ''
-#https://github.com/kaorimatz/packer-templates/blob/master/http/freebsd-10.3/installerconfig
-# http://www.virtualbox.org/manual/ch04.html#idm1803
 "export nonInteractive=""YES""
 DISTRIBUTIONS=""kernel.txz base.txz""
 #!
@@ -51,7 +46,9 @@ echo 'hostname=""freebsd""' >> /etc/rc.conf
 echo 'ifconfig_em0=""DHCP""' >> /etc/rc.conf
 echo 'sshd_enable=""YES""' >> /etc/rc.conf
 # NFS is started because VirtualBox shared folders are not working with the
-# VirtualBox Guest Additions provided by FreeBSD.
+# VirtualBox Guest Additions provided by FreeBSD. Use vagrant-winnfsd to run
+# an NFS server on Windows. See 'README.md' for known issues with this plug-in
+# and their solution : https://github.com/winnfsd/vagrant-winnfsd/
 echo 'nfs_client_enable=""YES""' >> /etc/rc.conf
 
 ln -s /usr/share/zoneinfo/$ActualTimeZoneCode /etc/localtime
