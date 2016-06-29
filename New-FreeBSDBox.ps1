@@ -331,6 +331,9 @@ if ( -not ( Test-VirtualMachine $Definition.Name ) )
         --register `
         --basefolder $BuildVboxFolderPath
 
+  & VBoxManage modifyvm $Definition.Name `
+        --nictype1 virtio
+
   $MemorySizeInMebibytes = coalesce $Definition.MemorySizeInMebibytes, 256
   & VBoxManage modifyvm $Definition.Name `
         --memory $MemorySizeInMebibytes `
