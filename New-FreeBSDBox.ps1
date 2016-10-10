@@ -268,6 +268,16 @@ if ( -not ( Test-Path $LocalInstallationIsoPath ) )
   }
 Assert-FileHasSha512Hash $LocalInstallationIsoPath $Definition.IsoSha512
 
+if ( $LocalInstallationIsoPath.EndsWith( '.xz' ) )
+  {
+  $UncompressedLocalInstallationIsoPath = $LocalInstallationIsoPath.Remove( $LocalInstallationIsoPath.Length - 3 )
+  if ( -not ( Test-Path $UncompressedLocalInstallationIsoPath ) )
+    {
+    & 7z x -aou $LocalInstallationIsoPath "-o$IsoFolderPath" | Out-Null
+    }
+  $LocalInstallationIsoPath = $UncompressedLocalInstallationIsoPath
+  }
+
 if ( -not ( Test-Path $CustomIsoPath ) )
   {
   # -aou: Automatically rename all filename collisions because the ISO
