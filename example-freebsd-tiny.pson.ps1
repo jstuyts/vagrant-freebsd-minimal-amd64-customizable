@@ -5,6 +5,9 @@
 
     # Optional. Default: zfs. Valid values: zfs, ufs
     #
+    # Note: ZFS will need more memory than the default of 256 MiB. With 1 GiB
+    # the system starts without ZFS warnings.
+    #
     # Note: In FreeBSD 10.3 root on ZFS is still experimental.
     RootFileSystemCode = 'zfs'
 
@@ -49,8 +52,8 @@
         }
     );
 
-    IsoUrl = 'ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/10.3/FreeBSD-10.3-RELEASE-amd64-disc1.iso';
-    IsoSha512 = '8137966d9b62eb4bf597b047a8a43ae9f9a06f23ab7c812f229d32cbfab5bb0cc27089dcfb5d233e50a18620b75606e31ff01bb3084517746664b3b3c46c9d04';
+    IsoUrl = 'ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/11.0/FreeBSD-11.0-RELEASE-amd64-disc1.iso.xz';
+    IsoSha512 = 'c572439d8431bd3def669bf4e304fa06ca9ee6dda4bfa31755220dc879e15e0508f7b8e56fa4c0a664c848864c3b52d7e0e285b2a6529a386915b03b371f86b2';
 
     # Optional. Default: UTC
     TimeZoneCode = 'Europe/Brussels';
